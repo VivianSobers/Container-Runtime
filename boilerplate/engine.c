@@ -522,9 +522,31 @@ static int run_supervisor(const char *rootfs)
  */
 static int send_control_request(const control_request_t *req)
 {
-    (void)req;
-    fprintf(stderr, "Control-plane client path not implemented.\n");
-    return 1;
+    int fd = socket(AF_UNIX, SOCK_STREAM, 0);
+    if (fd < 0) { perror("socket"); return 1; }
+
+    struct sockaddr_un addr = {0};
+    addr.sun_family = AF_UNIX;
+    strncpy(addr.sun_path, CONTROL_PATH, sizeof(addr.sun_path) - 1);
+
+    if (connect(fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+        perror("connect");
+        close(fd);
+        return 1;
+    }
+
+    if (write(fd, req, sizeof(*req)) != sizeof(*req)) {
+        perror("write");
+        close(fd);
+        return 1;
+    }
+
+    control_response_t resp = {0};
+    if (read(fd, &resp, sizeof(resp)) == sizeof(resp))
+        fprintf(stdout, "%s\n", resp.message);
+
+    close(fd);
+    return resp.status;
 }
 
 static int cmd_start(int argc, char *argv[])
