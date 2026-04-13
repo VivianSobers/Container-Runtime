@@ -338,7 +338,39 @@ void *logging_thread(void *arg)
  */
 int child_fn(void *arg)
 {
-    (void)arg;
+    child_config_t *cfg = (child_config_t *)arg;
+
+    if (sethostname(cfg->id, strlen(cfg->id)) < 0) 
+    {
+        perror("sethostname");
+        return 1;
+    }
+    if (mount("proc", "/proc", "proc", 0, NULL) < 0) 
+    {
+        perror("mount /proc");
+        return 1;
+    }
+    if (chroot(cfg->rootfs) < 0) 
+    {
+        perror("chroot");
+        return 1;
+    }
+    if (chdir("/") < 0) 
+    {
+        perror("chdir");
+        return 1;
+    }
+    if (dup2(cfg->log_write_fd, STDOUT_FILENO) < 0 ||
+        dup2(cfg->log_write_fd, STDERR_FILENO) < 0) {
+        perror("dup2");
+        return 1;
+    }
+    close(cfg->log_write_fd);
+    if (cfg->nice_value != 0)
+        nice(cfg->nice_value);
+    char *argv[] = { cfg->command, NULL };
+    execv(cfg->command, argv);
+    perror("execv");
     return 1;
 }
 
