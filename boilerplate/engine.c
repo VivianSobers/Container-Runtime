@@ -458,44 +458,58 @@ int unregister_from_monitor(int monitor_fd, const char *container_id, pid_t host
  *   - accept control requests and update container state
  *   - reap children and respond to signals
  */
+static volatile sig_atomic_t g_should_stop = 0;
+static supervisor_ctx_t *g_ctx = NULL;
+
+static void sigchld_handler(int sig) { (void)sig; }
+static void sigterm_handler(int sig) { (void)sig; g_should_stop = 1; }
+
 static int run_supervisor(const char *rootfs)
 {
+    (void)rootfs;
     supervisor_ctx_t ctx;
     int rc;
 
     memset(&ctx, 0, sizeof(ctx));
     ctx.server_fd = -1;
     ctx.monitor_fd = -1;
+    g_ctx = &ctx;
 
     rc = pthread_mutex_init(&ctx.metadata_lock, NULL);
-    if (rc != 0) {
-        errno = rc;
-        perror("pthread_mutex_init");
-        return 1;
-    }
+    if (rc != 0) { errno = rc; perror("pthread_mutex_init"); return 1; }
 
     rc = bounded_buffer_init(&ctx.log_buffer);
-    if (rc != 0) {
-        errno = rc;
-        perror("bounded_buffer_init");
-        pthread_mutex_destroy(&ctx.metadata_lock);
-        return 1;
-    }
+    if (rc != 0) { errno = rc; perror("bounded_buffer_init"); pthread_mutex_destroy(&ctx.metadata_lock); return 1; }
 
-    /*
-     * TODO:
-     *   1) open /dev/container_monitor
-     *   2) create the control socket / FIFO / shared-memory channel
-     *   3) install SIGCHLD / SIGINT / SIGTERM handling
-     *   4) spawn the logger thread
-     *   5) enter the supervisor event loop
-     */
-    fprintf(stderr, "Supervisor mode not implemented yet for base-rootfs: %s\n", rootfs);
+    ctx.monitor_fd = open("/dev/container_monitor", O_RDWR);
+    if (ctx.monitor_fd < 0)
+        perror("open /dev/container_monitor");
+
+    ctx.server_fd = socket(AF_UNIX, SOCK_STREAM, 0);
+    struct sockaddr_un addr = {0};
+    addr.sun_family = AF_UNIX;
+    strncpy(addr.sun_path, CONTROL_PATH, sizeof(addr.sun_path) - 1);
+    unlink(CONTROL_PATH);
+    bind(ctx.server_fd, (struct sockaddr *)&addr, sizeof(addr));
+    listen(ctx.server_fd, 8);
+
+    signal(SIGCHLD, sigchld_handler);
+    signal(SIGINT, sigterm_handler);
+    signal(SIGTERM, sigterm_handler);
+
+    pthread_t log_thread;
+    pthread_create(&log_thread, NULL, logging_thread, &ctx);
+
+    mkdir(LOG_DIR, 0755);
+
+    while (!g_should_stop)
+        sleep(1);
 
     bounded_buffer_begin_shutdown(&ctx.log_buffer);
+    pthread_join(log_thread, NULL);
     bounded_buffer_destroy(&ctx.log_buffer);
     pthread_mutex_destroy(&ctx.metadata_lock);
-    return 1;
+    return 0;
 }
 
 /*
