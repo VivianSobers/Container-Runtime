@@ -101,6 +101,8 @@ typedef struct {
     char container_id[CONTAINER_ID_LEN];
     char rootfs[PATH_MAX];
     char command[CHILD_COMMAND_LEN];
+    char args[4][CHILD_COMMAND_LEN];
+    int argc;
     unsigned long soft_limit_bytes;
     unsigned long hard_limit_bytes;
     int nice_value;
@@ -115,10 +117,11 @@ typedef struct {
     char id[CONTAINER_ID_LEN];
     char rootfs[PATH_MAX];
     char command[CHILD_COMMAND_LEN];
+    char args[4][CHILD_COMMAND_LEN];
+    int argc;
     int nice_value;
     int log_write_fd;
 } child_config_t;
-
 typedef struct {
     int server_fd;
     int monitor_fd;
@@ -434,7 +437,11 @@ int child_fn(void *arg)
     if (cfg->nice_value != 0)
         if (nice(cfg->nice_value) == -1) { /* best effort */ }
 
-    char *argv[] = { cfg->command, NULL };
+    char *argv[6] = { cfg->command, NULL, NULL, NULL, NULL, NULL };
+    int i;
+    for (i = 0; i < cfg->argc && i < 4; i++)
+        argv[i + 1] = cfg->args[i];
+    argv[cfg->argc + 1] = NULL;
     execv(cfg->command, argv);
     perror("execv");
     return 1;
@@ -628,7 +635,11 @@ static int run_supervisor(const char *rootfs)
             strncpy(cfg.command, req.command, sizeof(cfg.command) - 1);
             cfg.nice_value   = req.nice_value;
             cfg.log_write_fd = pipefd[1];
-
+            cfg.argc = 0;
+            cfg.argc = req.argc;
+            int i;
+            for (i = 0; i < req.argc && i < 4; i++)
+                strncpy(cfg.args[i], req.args[i], CHILD_COMMAND_LEN - 1);
             pid_t pid = clone(child_fn, stack + STACK_SIZE,
                               CLONE_NEWPID | CLONE_NEWUTS | CLONE_NEWNS | SIGCHLD,
                               &cfg);
@@ -704,7 +715,11 @@ static int run_supervisor(const char *rootfs)
             strncpy(cfg.command, req.command, sizeof(cfg.command) - 1);
             cfg.nice_value   = req.nice_value;
             cfg.log_write_fd = pipefd[1];
-
+            cfg.argc = 0;
+            cfg.argc = req.argc;
+            int i;
+            for (i = 0; i < req.argc && i < 4; i++)
+                strncpy(cfg.args[i], req.args[i], CHILD_COMMAND_LEN - 1);
             pid_t pid = clone(child_fn, stack + STACK_SIZE,
                               CLONE_NEWPID | CLONE_NEWUTS | CLONE_NEWNS | SIGCHLD,
                               &cfg);
@@ -897,10 +912,11 @@ static int send_control_request(const control_request_t *req)
 static int cmd_start(int argc, char *argv[])
 {
     control_request_t req;
+    int i;
 
     if (argc < 5) {
         fprintf(stderr,
-                "Usage: %s start <id> <container-rootfs> <command> [--soft-mib N] [--hard-mib N] [--nice N]\n",
+                "Usage: %s start <id> <container-rootfs> <command> [args...] [--soft-mib N] [--hard-mib N] [--nice N]\n",
                 argv[0]);
         return 1;
     }
@@ -912,8 +928,18 @@ static int cmd_start(int argc, char *argv[])
     strncpy(req.command,      argv[4], sizeof(req.command) - 1);
     req.soft_limit_bytes = DEFAULT_SOFT_LIMIT;
     req.hard_limit_bytes = DEFAULT_HARD_LIMIT;
+    req.argc = 0;
 
-    if (parse_optional_flags(&req, argc, argv, 5) != 0)
+    int flag_start = 5;
+    for (i = 5; i < argc && argv[i][0] != '-'; i++) {
+        if (req.argc < 4) {
+            strncpy(req.args[req.argc], argv[i], CHILD_COMMAND_LEN - 1);
+            req.argc++;
+        }
+        flag_start = i + 1;
+    }
+
+    if (parse_optional_flags(&req, argc, argv, flag_start) != 0)
         return 1;
 
     return send_control_request(&req);
@@ -922,10 +948,11 @@ static int cmd_start(int argc, char *argv[])
 static int cmd_run(int argc, char *argv[])
 {
     control_request_t req;
+    int i;
 
     if (argc < 5) {
         fprintf(stderr,
-                "Usage: %s run <id> <container-rootfs> <command> [--soft-mib N] [--hard-mib N] [--nice N]\n",
+                "Usage: %s run <id> <container-rootfs> <command> [args...] [--soft-mib N] [--hard-mib N] [--nice N]\n",
                 argv[0]);
         return 1;
     }
@@ -937,8 +964,18 @@ static int cmd_run(int argc, char *argv[])
     strncpy(req.command,      argv[4], sizeof(req.command) - 1);
     req.soft_limit_bytes = DEFAULT_SOFT_LIMIT;
     req.hard_limit_bytes = DEFAULT_HARD_LIMIT;
+    req.argc = 0;
 
-    if (parse_optional_flags(&req, argc, argv, 5) != 0)
+    int flag_start = 5;
+    for (i = 5; i < argc && argv[i][0] != '-'; i++) {
+        if (req.argc < 4) {
+            strncpy(req.args[req.argc], argv[i], CHILD_COMMAND_LEN - 1);
+            req.argc++;
+        }
+        flag_start = i + 1;
+    }
+
+    if (parse_optional_flags(&req, argc, argv, flag_start) != 0)
         return 1;
 
     return send_control_request(&req);
