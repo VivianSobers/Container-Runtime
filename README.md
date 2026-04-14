@@ -1,3 +1,10 @@
+![Language](https://img.shields.io/badge/Language-C-blue)
+![Platform](https://img.shields.io/badge/Platform-Linux-black)
+![Kernel](https://img.shields.io/badge/Kernel-Module-orange)
+![Namespaces](https://img.shields.io/badge/Isolation-Namespaces-success)
+![IPC](https://img.shields.io/badge/IPC-UNIX%20Sockets%20%7C%20Pipes-informational)
+![Scheduler](https://img.shields.io/badge/Scheduler-CFS-red)
+![Project](https://img.shields.io/badge/Type-Container%20Runtime-purple)
 # Container-Runtime
 
 A lightweight Docker-like container runtime built from scratch in C. Runs isolated containers using Linux namespaces, captures output through a bounded-buffer logging pipeline, enforces memory limits via a kernel module, and exposes a supervisor CLI.
