@@ -134,10 +134,10 @@ Log file contents captured through the pipe → bounded buffer → logging threa
 
 ![screenshot5](screenshots/5.png)
 
-### Screenshot 6 — Hard-limit enforcement
+### Screenshot 5 — Hard-limit enforcement
 `dmesg` output showing the kernel module killing the container when RSS exceeded 6MB. Supervisor metadata updates state to `killed`.
 
-![screenshot6](screenshots/6.png)
+![screenshot5](screenshots/5.png)
 
 ### Screenshot 7 — Scheduling experiment
 Two CPU-bound containers run simultaneously with nice=0 and nice=15. The lower-priority container took 2x longer to complete the same workload.
