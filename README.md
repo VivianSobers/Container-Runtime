@@ -1,12 +1,18 @@
-![Language](https://img.shields.io/badge/Language-C-blue)
-![Platform](https://img.shields.io/badge/Platform-Linux-black)
-![Kernel](https://img.shields.io/badge/Kernel-Module-orange)
-![Namespaces](https://img.shields.io/badge/Isolation-Namespaces-success)
-![IPC](https://img.shields.io/badge/IPC-UNIX%20Sockets%20%7C%20Pipes-informational)
-![Scheduler](https://img.shields.io/badge/Scheduler-CFS-red)
-![Project](https://img.shields.io/badge/Type-Container%20Runtime-purple)
 # Container-Runtime
+<p align="center">
 
+<img src="https://img.shields.io/badge/Language-C-00599C?style=for-the-badge&logo=c&logoColor=white" />
+<img src="https://img.shields.io/badge/Platform-Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black" />
+<img src="https://img.shields.io/badge/Runtime-Container%20Engine-0A66C2?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Isolation-Namespaces-228B22?style=for-the-badge" />
+<img src="https://img.shields.io/badge/IPC-Pipes%20%7C%20Sockets-6A5ACD?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Scheduler-CFS-DC143C?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Memory-RSS%20Tracking-FF8C00?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Architecture-Supervisor%20Model-8A2BE2?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Build-Makefile-4682B4?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Status-Battle%20Tested-32CD32?style=for-the-badge" />
+
+</p>
 A lightweight Docker-like container runtime built from scratch in C. Runs isolated containers using Linux namespaces, captures output through a bounded-buffer logging pipeline, enforces memory limits via a kernel module, and exposes a supervisor CLI.
 
 ---
