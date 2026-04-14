@@ -15,3 +15,6 @@ src/io_pulse
 src/memory_hog
 src/logs/
 src/.module-common.o
+src/.*.cmd
+src/*.cmd
+src/.keep
