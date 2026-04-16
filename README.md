@@ -88,7 +88,7 @@ enforces memory limits via a kernel module, and exposes a supervisor CLI.
 
 ---
 
-## 🛠 Build, Load, and Run Instructions
+## Build, Load, and Run Instructions
 
 ### Dependencies
 
@@ -322,7 +322,7 @@ Our experiments confirmed this. Two identical `cpu_hog` processes running for 10
 
 ---
 
-## 🎛 Design Decisions and Tradeoffs
+## Design Decisions and Tradeoffs
 
 ### Namespace Isolation
 
