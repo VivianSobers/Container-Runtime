@@ -1,17 +1,16 @@
 # Container-Runtime
-![Language](https://img.shields.io/badge/Language-C-blue?style=for-the-badge&logo=c&logoColor=white)
-![Platform](https://img.shields.io/badge/Platform-Linux-black?style=for-the-badge&logo=linux&logoColor=white)
-![Kernel](https://img.shields.io/badge/Kernel-Space-orange?style=for-the-badge&logo=linux&logoColor=white)
-![Runtime](https://img.shields.io/badge/Runtime-Container%20Engine-success?style=for-the-badge)
-![Isolation](https://img.shields.io/badge/Isolation-Namespaces-brightgreen?style=for-the-badge)
-![IPC](https://img.shields.io/badge/IPC-Pipes%20%7C%20Sockets-informational?style=for-the-badge)
-![Scheduler](https://img.shields.io/badge/Scheduler-CFS-red?style=for-the-badge)
-![Memory](https://img.shields.io/badge/Memory-RSS%20Tracking-yellow?style=for-the-badge)
-![Architecture](https://img.shields.io/badge/Architecture-Supervisor%20Model-purple?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Production%20Ready-success?style=for-the-badge)
-![Build](https://img.shields.io/badge/Build-Makefile-blueviolet?style=for-the-badge)
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=for-the-badge)](https://opensource.org/licenses/Apache-2.0)
-
+![Language](https://img.shields.io/badge/Language-C-0033CC?style=for-the-badge&logo=c&logoColor=white&labelColor=1E5BFF)
+![Platform](https://img.shields.io/badge/Platform-Linux-000000?style=for-the-badge&logo=linux&logoColor=white&labelColor=1C1C1C)
+![Kernel](https://img.shields.io/badge/Kernel-Space-CC4400?style=for-the-badge&logo=linux&logoColor=white&labelColor=FF6A00)
+![Runtime](https://img.shields.io/badge/Runtime-Container%20Engine-009944?style=for-the-badge&labelColor=00CC66)
+![Isolation](https://img.shields.io/badge/Isolation-Namespaces-00897B?style=for-the-badge&labelColor=00BFA5)
+![IPC](https://img.shields.io/badge/IPC-Pipes%20%7C%20Sockets-0088AA?style=for-the-badge&labelColor=00AACC)
+![Scheduler](https://img.shields.io/badge/Scheduler-CFS-8B0000?style=for-the-badge&labelColor=C62828)
+![Memory](https://img.shields.io/badge/Memory-RSS%20Tracking-C9A000?style=for-the-badge&labelColor=E6C200)
+![Architecture](https://img.shields.io/badge/Architecture-Supervisor%20Model-5A2DCC?style=for-the-badge&labelColor=7C4DFF)
+![Status](https://img.shields.io/badge/Status-Production%20Ready-007F33?style=for-the-badge&labelColor=00A84D)
+![Build](https://img.shields.io/badge/Build-Makefile-4B1FB3?style=for-the-badge&labelColor=6A3DFF)
+![License](https://img.shields.io/badge/License-Apache%202.0-B31252?style=for-the-badge&labelColor=E91E63)
 
 A lightweight Docker-like container runtime built from scratch in C. Runs isolated containers using Linux namespaces, captures output through a bounded-buffer logging pipeline, enforces memory limits via a kernel module, and exposes a supervisor CLI.
 
