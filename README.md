@@ -147,7 +147,7 @@ Log file contents captured through the pipe → bounded buffer → logging threa
 
 ![screenshot5](screenshots/5.png)
 
-### Screenshot 5 — Hard-limit enforcement
+### Screenshot 6 — Hard-limit enforcement
 `dmesg` output showing the kernel module killing the container when RSS exceeded 6MB. Supervisor metadata updates state to `killed`.
 
 ![screenshot5](screenshots/5.png)
