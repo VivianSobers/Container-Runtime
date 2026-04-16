@@ -79,7 +79,7 @@ enforces memory limits via a kernel module, and exposes a supervisor CLI.
 
 ---
 
-## 👥 Team Information
+## Team Information
 
 | Name | SRN |
 |------|-----|
