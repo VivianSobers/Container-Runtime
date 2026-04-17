@@ -410,23 +410,8 @@ Experiment 2: CPU vs I/O bound
 
 ---
 
-## Known Limitations & Future Work
-
-| Area | Current Limitation | Production Fix |
-|------|--------------------|----------------|
-| **Filesystem isolation** | `chroot` — privileged escape possible | Replace with `pivot_root` + drop `CAP_SYS_CHROOT` |
-| **CLI concurrency** | Sequential accept loop — concurrent commands serialized | Threaded accept loop with per-command goroutine/thread |
-| **Log streaming** | Logs capped at `CONTROL_MESSAGE_LEN` bytes per response | Dedicated streaming socket for log tailing |
-| **Memory polling** | 1-second interval — process can over-allocate for up to 1s | Reduce to 100ms, or hook into kernel memory pressure notifiers |
-| **Namespace coverage** | Only PID, UTS, MNT — no network, user, or IPC namespaces | Add `CLONE_NEWNET`, `CLONE_NEWUSER`, `CLONE_NEWIPC` |
-| **Cgroups** | RSS tracked but not cgroup-enforced | Use cgroups v2 for memory, CPU, and I/O accounting |
-| **Security** | No seccomp filter, full syscall surface exposed | Apply seccomp allowlist (e.g., libseccomp) on container exec |
-
----
-
 <div align="center">
-
-Built for the Operating Systems course — PES University, 2024  
+    
 Licensed under the Apache 2.0 License
 
 </div>
